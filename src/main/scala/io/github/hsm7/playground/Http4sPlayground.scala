@@ -19,8 +19,7 @@ object Http4sPlayground extends IOApp.Simple {
 
   type Student = String
 
-  case class Instructor(firstName: String, lastName: String)
-  case class Course(id: String, title: String, year: Int, students: List[Student], instructor: String)
+  private case class Course(id: String, title: String, year: Int, students: List[Student], instructor: String)
 
   private object Courses {
     private val typelevelCourse: Course = Course(
