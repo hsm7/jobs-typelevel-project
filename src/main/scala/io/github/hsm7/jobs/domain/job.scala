@@ -17,7 +17,7 @@ object job {
       salaryLow: Option[Int],
       salaryHigh: Option[Int],
       currency: Option[String],
-      county: Option[String],
+      country: Option[String],
       tags: Option[List[String]],
       image: Option[String],
       other: Option[String]
@@ -48,6 +48,7 @@ object job {
       None
     )
     val empty: JobInfo = JobInfo("", "", "", "", "", false, None, None, None, None, None, None, None, None)
+    
   }
 
 }
