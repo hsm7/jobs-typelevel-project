@@ -1,12 +1,12 @@
 package io.github.hsm7.jobs.http
 
-import cats.effect.Concurrent
+import cats.effect.kernel.Async
 import cats.implicits.*
 import io.github.hsm7.jobs.http.routes.{HealthRoutes, JobRoutes}
 import org.http4s.HttpRoutes
 import org.http4s.server.Router
 
-class HttpApi[F[_]: Concurrent] private {
+class HttpApi[F[_]: Async] private {
 
   private val healthRoutes = HealthRoutes[F].routes
   private val jobRoutes    = JobRoutes[F].routes
@@ -17,5 +17,5 @@ class HttpApi[F[_]: Concurrent] private {
 }
 
 object HttpApi {
-  def apply[F[_]: Concurrent]: HttpApi[F] = new HttpApi[F]
+  def apply[F[_]: Async]: HttpApi[F] = new HttpApi[F]
 }

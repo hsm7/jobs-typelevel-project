@@ -3,7 +3,6 @@ package io.github.hsm7.jobs
 import cats.effect.{IO, IOApp}
 import org.http4s.ember.server.EmberServerBuilder
 import pureconfig.ConfigSource
-
 import io.github.hsm7.jobs.config.syntax.*
 import io.github.hsm7.jobs.config.EmberConfig
 import io.github.hsm7.jobs.http.HttpApi
