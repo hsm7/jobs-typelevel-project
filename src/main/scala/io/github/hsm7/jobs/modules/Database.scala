@@ -5,7 +5,7 @@ import doobie.{ExecutionContexts, Transactor}
 import doobie.hikari.HikariTransactor
 import io.github.hsm7.jobs.config.DatabaseConfig
 
-final class Database[F[_]: Async] private (val xa: Transactor[F]) {}
+final class Database[F[_]: Async] private (val xa: Transactor[F])
 object Database {
 
   def apply[F[_]: Async](dbConfig: DatabaseConfig): Resource[F, Database[F]] = for {
