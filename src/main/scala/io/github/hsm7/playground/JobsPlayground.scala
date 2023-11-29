@@ -5,7 +5,7 @@ import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 
 import io.github.hsm7.jobs.domain.job.JobInfo
-import io.github.hsm7.jobs.services.JobsService
+import io.github.hsm7.jobs.services.JobService
 
 object JobsPlayground extends IOApp.Simple {
 
@@ -39,7 +39,7 @@ object JobsPlayground extends IOApp.Simple {
   )
 
   override def run: IO[Unit] =
-    val jobsResource = postgresResource.flatMap(xa => JobsService[IO](xa))
+    val jobsResource = postgresResource.flatMap(xa => JobService[IO](xa))
     jobsResource.use { jobs =>
       for {
         id       <- jobs.create("email@example.com", jobInfo)

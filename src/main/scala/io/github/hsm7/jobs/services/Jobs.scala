@@ -19,7 +19,7 @@ trait Jobs[F[_]] {
   def delete(id: UUID): F[Boolean]
 }
 
-class JobsService[F[_]: MonadCancelThrow] private (xa: Transactor[F]) extends Jobs[F] {
+class JobService[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F] {
 
   def getAll: F[List[Job]] = sql"""
     |SELECT
@@ -151,9 +151,9 @@ class JobsService[F[_]: MonadCancelThrow] private (xa: Transactor[F]) extends Jo
 
 }
 
-object JobsService {
-  def apply[F[_]: MonadCancelThrow](xa: Transactor[F]): Resource[F, JobsService[F]] =
-    Resource.pure(new JobsService[F](xa))
+object JobService {
+  def apply[F[_]: MonadCancelThrow](xa: Transactor[F]): Resource[F, JobService[F]] =
+    Resource.pure(new JobService[F](xa))
 
   given jobReader(using
       read: Read[
