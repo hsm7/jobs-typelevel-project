@@ -13,7 +13,6 @@ lazy val tsecVersion                = "0.4.0"
 lazy val scalaTestVersion           = "3.2.15"
 lazy val scalaTestCatsEffectVersion = "1.4.0"
 lazy val testContainerVersion       = "1.17.6"
-lazy val logbackVersion             = "1.4.7"
 lazy val slf4jVersion               = "2.0.5"
 lazy val javaMailVersion            = "1.6.2"
 
@@ -44,6 +43,5 @@ lazy val server = (project in file("."))
       "org.typelevel"         %% "cats-effect-testing-scalatest" % scalaTestCatsEffectVersion % Test,
       "org.testcontainers"     % "testcontainers"                % testContainerVersion       % Test,
       "org.testcontainers"     % "postgresql"                    % testContainerVersion       % Test,
-      "ch.qos.logback"         % "logback-classic"               % logbackVersion             % Test
     )
   )
