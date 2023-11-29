@@ -4,12 +4,12 @@ import com.comcast.ip4s.{Host, Port}
 import pureconfig.ConfigReader
 import pureconfig.error.CannotConvert
 
-case class EmberConfig (host: Host, port: Port)
+case class ServerConfig(host: Host, port: Port)
 
-object EmberConfig {
+object ServerConfig {
 
-  given emberConfigReader: ConfigReader[EmberConfig] =
-    ConfigReader.forProduct2("host", "port")(EmberConfig(_, _))(hostReader, portReader)
+  given serverConfigReader: ConfigReader[ServerConfig] =
+    ConfigReader.forProduct2("host", "port")(ServerConfig(_, _))(hostReader, portReader)
 
   private val hostReader: ConfigReader[Host] = ConfigReader[String].emap { host =>
     Host.fromString(host)
