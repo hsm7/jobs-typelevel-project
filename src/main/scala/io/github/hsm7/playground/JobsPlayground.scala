@@ -41,19 +41,19 @@ object JobsPlayground extends IOApp.Simple {
 
   override def run: IO[Unit] = postgresResource.use { xa =>
     for {
-      jobs    <- JobsService[IO](xa)
-      id      <- jobs.create("email@example.com", jobInfo)
-      _       <- IO.println(s"Created job with id: $id")
-      job     <- jobs.get(id)
-      _       <- IO.println(s"Found job: $job")
-      flag    <- jobs.update(id, updateJob)
-      _       <- IO.println(s"Update flag: $flag")
-      allJobs <- jobs.getAll
-      _       <- IO.println(s"All jobs: $allJobs")
-      flag2   <- jobs.delete(id)
-      _       <- IO.println(s"Delete flag: $flag2")
+      jobs     <- JobsService[IO](xa)
+      id       <- jobs.create("email@example.com", jobInfo)
+      _        <- IO.println(s"Created job with id: $id")
+      job      <- jobs.get(id)
+      _        <- IO.println(s"Found job: $job")
+      flag     <- jobs.update(id, updateJob)
+      _        <- IO.println(s"Update flag: $flag")
+      allJobs  <- jobs.getAll
+      _        <- IO.println(s"All jobs: $allJobs")
+      flag2    <- jobs.delete(id)
+      _        <- IO.println(s"Delete flag: $flag2")
       allJobs2 <- jobs.getAll
-      _       <- IO.println(s"All jobs: $allJobs2")
+      _        <- IO.println(s"All jobs: $allJobs2")
     } yield ()
   }
 

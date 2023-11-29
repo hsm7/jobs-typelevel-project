@@ -32,12 +32,12 @@ object Http4sPlayground extends IOApp.Simple {
 
     private val courses: Map[String, Course] = Map(typelevelCourse.id -> typelevelCourse)
 
-    def findCourseById(courseId: UUID): Option[Course] = courses.get(courseId.toString)
+    def findCourseById(courseId: UUID): Option[Course]      = courses.get(courseId.toString)
     def findCoursesByInstructor(name: String): List[Course] = courses.values.filter(_.instructor == name).toList
   }
 
   private object InstructorQueryParamMatcher extends QueryParamDecoderMatcher[String]("instructor")
-  private object YearQueryParamMatcher extends OptionalValidatingQueryParamDecoderMatcher[Int]("year")
+  private object YearQueryParamMatcher       extends OptionalValidatingQueryParamDecoderMatcher[Int]("year")
 
   private def courseRoutes[F[_]: Monad]: HttpRoutes[F] = {
     val dsl = Http4sDsl[F]
@@ -55,25 +55,24 @@ object Http4sPlayground extends IOApp.Simple {
         val courses = Courses.findCoursesByInstructor(instructor)
         maybeYear match {
           case Some(validated) => filterByYear(courses, validated)
-          case None => Ok(courses.asJson)
+          case None            => Ok(courses.asJson)
         }
       case GET -> Root / "courses" / UUIDVar(courseId) / "students" =>
         Courses.findCourseById(courseId).map(_.students) match
           case Some(students) => Ok(students.asJson, Header.Raw(CIString("custom-header"), "custom-header-value"))
-          case None => NotFound(s"No course with $courseId was found.")
+          case None           => NotFound(s"No course with $courseId was found.")
     }
   }
 
   private def healthRoute[F[_]: Monad]: HttpRoutes[F] = {
     val dsl = Http4sDsl[F]
     import dsl.*
-    HttpRoutes.of[F] {
-      case GET -> Root / "health" => Ok("All is ok")
+    HttpRoutes.of[F] { case GET -> Root / "health" =>
+      Ok("All is ok")
     }
   }
 
   private def allRoutes[F[_]: Monad]: HttpRoutes[F] = courseRoutes[F] <+> healthRoute[F]
-
 
   override def run: IO[Unit] = EmberServerBuilder
     .default[IO]

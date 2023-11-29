@@ -34,17 +34,15 @@ object DoobiePlayground extends IOApp.Simple {
           .transact(xa)
 
       override def create(name: String): F[Int] =
-        sql"insert into students(name) values ($name)"
-          .update
+        sql"insert into students(name) values ($name)".update
           .withUniqueGeneratedKeys[Int]("id")
           .transact(xa)
     }
   }
 
-
   private val postgresResource: Resource[IO, HikariTransactor[IO]] = for {
     ec <- ExecutionContexts.fixedThreadPool[IO](16)
-    xa <- HikariTransactor.newHikariTransactor[IO] (
+    xa <- HikariTransactor.newHikariTransactor[IO](
       "org.postgresql.Driver",
       "jdbc:postgresql://localhost:5433/demo",
       "docker",
@@ -55,10 +53,10 @@ object DoobiePlayground extends IOApp.Simple {
 
   override def run: IO[Unit] = postgresResource.use { xa =>
     for {
-      _ <- Students[IO](xa).create("hussam")
-      _ <- Students[IO](xa).create("marshall")
+      _        <- Students[IO](xa).create("hussam")
+      _        <- Students[IO](xa).create("marshall")
       students <- Students[IO](xa).findAll
-      _ <- IO.println(students)
+      _        <- IO.println(students)
     } yield ()
   }
 

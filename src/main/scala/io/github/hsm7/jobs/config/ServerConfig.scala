@@ -12,12 +12,14 @@ object ServerConfig {
     ConfigReader.forProduct2("host", "port")(ServerConfig(_, _))(hostReader, portReader)
 
   private val hostReader: ConfigReader[Host] = ConfigReader[String].emap { host =>
-    Host.fromString(host)
+    Host
+      .fromString(host)
       .toRight(CannotConvert(host, Host.getClass.toString, s"Invalid host string: $host"))
   }
 
   private val portReader: ConfigReader[Port] = ConfigReader[Int].emap { port =>
-    Port.fromInt(port)
+    Port
+      .fromInt(port)
       .toRight(CannotConvert(port.toString, Host.getClass.toString, s"Invalid host number: $port"))
   }
 

@@ -48,7 +48,7 @@ object job {
       None
     )
     val empty: JobInfo = JobInfo("", "", "", "", "", false, None, None, None, None, None, None, None, None)
-    
+
   }
 
 }

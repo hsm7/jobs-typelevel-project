@@ -2,7 +2,7 @@ package io.github.hsm7.jobs.config
 
 import pureconfig.ConfigReader
 
-case class ApplicationConfig (databaseConfig: DatabaseConfig, serverConfig: ServerConfig)
+case class ApplicationConfig(databaseConfig: DatabaseConfig, serverConfig: ServerConfig)
 
 object ApplicationConfig {
 
