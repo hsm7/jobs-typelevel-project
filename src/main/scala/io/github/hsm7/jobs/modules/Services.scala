@@ -8,7 +8,6 @@ final class Services[F[_]] private (val jobs: Jobs[F])
 object Services {
 
   def apply[F[_]: Async](database: Database[F]): Resource[F, Services[F]] =
-    Resource
-      .eval(JobsService[F](database.xa))
+    JobsService[F](database.xa)
       .map(jobs => new Services(jobs))
 }

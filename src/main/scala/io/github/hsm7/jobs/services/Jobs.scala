@@ -1,12 +1,11 @@
 package io.github.hsm7.jobs.services
 
 import cats.implicits.*
-import cats.effect.MonadCancelThrow
+import cats.effect.{MonadCancelThrow, Resource}
 import doobie.implicits.*
 import doobie.postgres.implicits.*
 import doobie.util.Read
 import doobie.util.transactor.Transactor
-
 import io.github.hsm7.jobs.domain.job.{Job, JobInfo}
 
 import java.util.UUID
@@ -153,7 +152,8 @@ class JobsService[F[_]: MonadCancelThrow] private (xa: Transactor[F]) extends Jo
 }
 
 object JobsService {
-  def apply[F[_]: MonadCancelThrow](xa: Transactor[F]): F[JobsService[F]] = new JobsService[F](xa).pure[F]
+  def apply[F[_]: MonadCancelThrow](xa: Transactor[F]): Resource[F, JobsService[F]] =
+    Resource.pure(new JobsService[F](xa))
 
   given jobReader(using
       read: Read[
