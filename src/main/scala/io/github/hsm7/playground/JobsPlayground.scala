@@ -1,10 +1,9 @@
 package io.github.hsm7.playground
 
-import cats.effect.kernel.Resource
-import cats.effect.{IO, IOApp, MonadCancelThrow}
+import cats.effect.{IO, IOApp, Resource}
 import doobie.hikari.HikariTransactor
-import doobie.implicits.*
 import doobie.util.ExecutionContexts
+
 import io.github.hsm7.jobs.domain.job.JobInfo
 import io.github.hsm7.jobs.services.JobsService
 
