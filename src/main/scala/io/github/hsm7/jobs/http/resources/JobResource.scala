@@ -1,6 +1,6 @@
-package io.github.hsm7.jobs.http.routes
+package io.github.hsm7.jobs.http.resources
 
-import cats.effect.kernel.Async
+import cats.effect.Async
 import cats.implicits.*
 import io.circe.generic.auto.*
 import org.http4s.circe.CirceEntityCodec.*
@@ -8,16 +8,15 @@ import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
 import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 import java.util.UUID
-import scala.collection.mutable
 import io.github.hsm7.jobs.domain.job.{Job, JobInfo}
 import io.github.hsm7.jobs.http.utils.responses.ErrorResponse
 import io.github.hsm7.jobs.logging.syntax.*
 import io.github.hsm7.jobs.services.Jobs
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 
-class JobRoutes[F[_]: Async] private (jobs: Jobs[F]) extends Http4sDsl[F] {
+class JobResource[F[_]: Async] private(jobs: Jobs[F]) extends Http4sDsl[F] {
 
   given logger: Logger[F] = Slf4jLogger.getLogger[F]
 
@@ -70,6 +69,6 @@ class JobRoutes[F[_]: Async] private (jobs: Jobs[F]) extends Http4sDsl[F] {
   )
 }
 
-object JobRoutes {
-  def apply[F[_]: Async](jobs: Jobs[F]): JobRoutes[F] = new JobRoutes[F](jobs)
+object JobResource {
+  def apply[F[_]: Async](jobs: Jobs[F]): JobResource[F] = new JobResource[F](jobs)
 }
