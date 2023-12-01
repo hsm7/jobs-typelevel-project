@@ -5,6 +5,7 @@ import java.util.UUID
 object job {
 
   case class Job(id: UUID, date: Long, ownerEmail: String, jobInfo: JobInfo, active: Boolean)
+  case class JobFilters(companies: Option[List[String]], tags: Option[List[String]], remote: Option[Boolean])
 
   case class JobInfo(
       title: String,

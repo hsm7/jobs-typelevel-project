@@ -6,12 +6,13 @@ import doobie.implicits.*
 import doobie.postgres.implicits.*
 import doobie.util.Read
 import doobie.util.transactor.Transactor
-import io.github.hsm7.jobs.domain.job.{Job, JobInfo}
+import io.github.hsm7.jobs.domain.job.{Job, JobFilters, JobInfo}
 
 import java.util.UUID
 
 trait Jobs[F[_]] {
 
+  def getAll(limit: Option[Int], offset: Option[Int], filters: JobFilters): F[List[Job]]
   def getAll: F[List[Job]]
   def get(id: UUID): F[Option[Job]]
   def create(ownerEmail: String, jobInfo: JobInfo): F[UUID]
@@ -21,6 +22,7 @@ trait Jobs[F[_]] {
 
 class JobService[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F] {
 
+  def getAll(limit: Option[Int], offset: Option[Int], filters: JobFilters): F[List[Job]] = ???
   def getAll: F[List[Job]] = sql"""
     |SELECT
     |   id,

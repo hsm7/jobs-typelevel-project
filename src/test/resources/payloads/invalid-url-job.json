@@ -2,7 +2,7 @@
   "title": "Fullstack Developer",
   "company": "Ravenware",
   "description": "A very long job description",
-  "externalUrl": "http://www.example.com/apply",
+  "externalUrl": "www.example.com",
   "location": "KRT",
   "remote": true
 }
