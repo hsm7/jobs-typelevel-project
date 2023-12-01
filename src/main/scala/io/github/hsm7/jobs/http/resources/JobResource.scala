@@ -1,5 +1,6 @@
 package io.github.hsm7.jobs.http.resources
 
+import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Async
 import cats.implicits.*
 import io.circe.generic.auto.*
@@ -13,10 +14,11 @@ import org.typelevel.log4cats.slf4j.Slf4jLogger
 import java.util.UUID
 import io.github.hsm7.jobs.domain.job.{Job, JobInfo}
 import io.github.hsm7.jobs.http.utils.responses.ErrorResponse
-import io.github.hsm7.jobs.logging.syntax.*
+import io.github.hsm7.jobs.http.validation.syntax.*
+import io.github.hsm7.jobs.http.validation.validators.given
 import io.github.hsm7.jobs.services.Jobs
 
-class JobResource[F[_]: Async] private(jobs: Jobs[F]) extends Http4sDsl[F] {
+class JobResource[F[_]: Async] private (jobs: Jobs[F]) extends Http4sDsl[F] {
 
   given logger: Logger[F] = Slf4jLogger.getLogger[F]
 
@@ -37,23 +39,25 @@ class JobResource[F[_]: Async] private(jobs: Jobs[F]) extends Http4sDsl[F] {
 
   // create new job
   private val create: HttpRoutes[F] = HttpRoutes.of[F] { case req @ POST -> Root =>
-    for {
-      jobInfo  <- req.as[JobInfo].logError(e => s"Parsing request failed with: $e")
-      id       <- jobs.create("email@example.com", jobInfo)
-      response <- Created(id)
-      _        <- logger.info(s"Created job with id: $id")
-    } yield response
+    req.validate[JobInfo].flatMap {
+      case Invalid(e) => BadRequest(e)
+      case Valid(jobInfo) =>
+        jobs.create("email@example.com", jobInfo).flatMap { id =>
+          logger.info(s"Created job with id: $id") >> Created(id)
+        }
+    }
   }
 
   // update job
   private val update: HttpRoutes[F] = HttpRoutes.of[F] { case req @ PUT -> Root / UUIDVar(id) =>
-    for {
-      jobInfo <- req.as[JobInfo].logError(e => s"Parsing request failed with: $e")
-      updated <- jobs.update(id, jobInfo)
-      response <-
-        if updated then logger.info(s"Updated job with id: $id") >> NoContent()
-        else logger.info(s"No job found with id: $id") >> NotFound(ErrorResponse(s"No job found with id: $id"))
-    } yield response
+    req.validate[JobInfo].flatMap {
+      case Invalid(e) => BadRequest(e)
+      case Valid(jobInfo) =>
+        jobs.update(id, jobInfo).flatMap { updated =>
+          if updated then logger.info(s"Updated job with id: $id") >> NoContent()
+          else logger.info(s"No job found with id: $id") >> NotFound(ErrorResponse(s"No job found with id: $id"))
+        }
+    }
   }
 
   // delete job
