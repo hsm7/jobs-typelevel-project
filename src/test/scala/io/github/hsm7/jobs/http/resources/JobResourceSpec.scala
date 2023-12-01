@@ -3,7 +3,7 @@ package io.github.hsm7.jobs.http.resources
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
 import io.github.hsm7.jobs.fixtures.JobFixture
-import io.github.hsm7.jobs.domain.job.{Job, JobInfo}
+import io.github.hsm7.jobs.domain.job.{Job, JobInfo, JobFilters}
 import io.github.hsm7.jobs.services.Jobs
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
@@ -19,6 +19,8 @@ class JobResourceSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with 
 
   val jobsMock: Jobs[IO] = new Jobs[IO] {
     override def getAll: IO[List[Job]] = IO.pure(List(SCALA_JOB))
+    override def getAll(limit: Option[Int], offset: Option[Int], filters: JobFilters): IO[List[Job]] =
+      IO.pure(List(SCALA_JOB))
 
     override def get(id: UUID): IO[Option[Job]] =
       if (id == SCALA_JOB_UUID) IO.pure(Some(SCALA_JOB))
