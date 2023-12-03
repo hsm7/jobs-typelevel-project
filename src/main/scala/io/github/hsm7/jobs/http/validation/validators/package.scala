@@ -9,7 +9,7 @@ import java.net.URI
 import scala.util.{Failure, Success, Try}
 
 def nonBlank(value: String, fieldName: String): ValidatedNel[(String, String), String] =
-  if (value.isBlank) (fieldName -> "Field cannot be empty").invalidNel
+  if (value.isBlank) (fieldName -> s"Field '$fieldName' cannot be empty").invalidNel
   else value.validNel
 
 def validUrl(value: String, fieldName: String): ValidatedNel[(String, String), String] =

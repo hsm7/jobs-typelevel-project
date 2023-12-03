@@ -3,7 +3,8 @@ package io.github.hsm7.jobs.http.resources
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
 import io.github.hsm7.jobs.fixtures.JobFixture
-import io.github.hsm7.jobs.domain.job.{Job, JobInfo, JobFilters}
+import io.github.hsm7.jobs.domain.job.{Job, JobFilters, JobInfo}
+import io.github.hsm7.jobs.domain.ErrorResult
 import io.github.hsm7.jobs.services.Jobs
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
@@ -22,19 +23,17 @@ class JobResourceSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with 
     override def getAll(limit: Option[Int], offset: Option[Int], filters: JobFilters): IO[List[Job]] =
       IO.pure(List(SCALA_JOB))
 
-    override def get(id: UUID): IO[Option[Job]] =
-      if (id == SCALA_JOB_UUID) IO.pure(Some(SCALA_JOB))
-      else IO.pure(None)
+    override def get(id: UUID): IO[Either[ErrorResult, Job]] =
+      if (id == SCALA_JOB_UUID) IO.pure(Right(SCALA_JOB))
+      else IO.pure(Left(JOB_NOT_FOUND_ERROR))
 
     override def create(ownerEmail: String, jobInfo: JobInfo): IO[UUID] = IO.pure(NEW_JOB_UUID)
 
-    override def update(id: UUID, jobInfo: JobInfo): IO[Boolean] =
-      if (id == SCALA_JOB_UUID) IO.pure(true)
-      else IO.pure(false)
+    override def update(id: UUID, jobInfo: JobInfo): IO[Either[ErrorResult, UUID]] =
+      if (id == SCALA_JOB_UUID) IO.pure(Right(id))
+      else IO.pure(Left(JOB_NOT_FOUND_ERROR))
 
-    override def delete(id: UUID): IO[Boolean] =
-      if (id == SCALA_JOB_UUID) IO.pure(true)
-      else IO.pure(false)
+    override def delete(id: UUID): IO[Unit] = IO.unit
   }
 
   val jobRoutes: HttpRoutes[IO] = JobResource[IO](jobsMock).routes

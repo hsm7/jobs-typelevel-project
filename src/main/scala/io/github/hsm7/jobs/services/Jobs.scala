@@ -6,6 +6,7 @@ import doobie.implicits.*
 import doobie.postgres.implicits.*
 import doobie.util.Read
 import doobie.util.transactor.Transactor
+import io.github.hsm7.jobs.domain.{ErrorResult, ResourceNotFound}
 import io.github.hsm7.jobs.domain.job.{Job, JobFilters, JobInfo}
 
 import java.util.UUID
@@ -14,13 +15,13 @@ trait Jobs[F[_]] {
 
   def getAll(limit: Option[Int], offset: Option[Int], filters: JobFilters): F[List[Job]]
   def getAll: F[List[Job]]
-  def get(id: UUID): F[Option[Job]]
+  def get(id: UUID): F[Either[ErrorResult, Job]]
   def create(ownerEmail: String, jobInfo: JobInfo): F[UUID]
-  def update(id: UUID, jobInfo: JobInfo): F[Boolean]
-  def delete(id: UUID): F[Boolean]
+  def update(id: UUID, jobInfo: JobInfo): F[Either[ErrorResult, UUID]]
+  def delete(id: UUID): F[Unit]
 }
 
-class JobService[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs[F] {
+class JobService[F[_]: MonadCancelThrow] private (xa: Transactor[F]) extends Jobs[F] {
 
   def getAll(limit: Option[Int], offset: Option[Int], filters: JobFilters): F[List[Job]] = ???
   def getAll: F[List[Job]] = sql"""
@@ -47,7 +48,7 @@ class JobService[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs
     .to[List]
     .transact(xa)
 
-  def get(id: UUID): F[Option[Job]] = sql"""
+  def get(id: UUID): F[Either[ErrorResult, Job]] = sql"""
     |SELECT
     |   id,
     |   date,
@@ -73,6 +74,10 @@ class JobService[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs
     .query[Job]
     .option
     .transact(xa)
+    .map {
+      case None      => Left(ResourceNotFound(s"No job found with id: $id"))
+      case Some(job) => Right(job)
+    }
 
   def create(ownerEmail: String, jobInfo: JobInfo): F[UUID] = sql"""
     |INSERT INTO jobs (
@@ -116,7 +121,7 @@ class JobService[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs
     .withUniqueGeneratedKeys[UUID]("id")
     .transact(xa)
 
-  def update(id: UUID, jobInfo: JobInfo): F[Boolean] = sql"""
+  def update(id: UUID, jobInfo: JobInfo): F[Either[ErrorResult, UUID]] = sql"""
     |UPDATE jobs
     |SET
     |   title = ${jobInfo.title},
@@ -137,20 +142,16 @@ class JobService[F[_]: MonadCancelThrow] private(xa: Transactor[F]) extends Jobs
     |""".stripMargin.update.run
     .transact(xa)
     .map {
-      case 0 => false
-      case _ => true
+      case 0 => Left(ResourceNotFound(s"No job found with id: $id"))
+      case _ => Right(id)
     }
 
-  def delete(id: UUID): F[Boolean] = sql"""
+  def delete(id: UUID): F[Unit] = sql"""
     |DELETE FROM jobs
     |WHERE id = $id
     |""".stripMargin.update.run
     .transact(xa)
-    .map {
-      case 0 => false
-      case _ => true
-    }
-
+    .void
 }
 
 object JobService {

@@ -1,13 +1,18 @@
 package io.github.hsm7.jobs.fixtures
 
-import java.util.UUID
+import io.github.hsm7.jobs.domain.ResourceNotFound
 
+import java.util.UUID
 import io.github.hsm7.jobs.domain.job.{Job, JobInfo}
 
 trait JobFixture {
 
-  val NOT_FOUND_JOB_UUID: UUID = UUID.fromString("6ea79557-3112-4c84-a8f5-1d1e2c300948")
-  val SCALA_JOB_UUID: UUID     = UUID.fromString("843df718-ec6e-4d49-9289-f799c0f40064")
+  val JOB_NOT_FOUND_ERROR: ResourceNotFound = ResourceNotFound(
+    "No job found with id: 843df718-ec6e-4d49-9289-f799c0f40064"
+  )
+  val JOB_NOT_FOUND_PREFIX: String = "No job found with id: "
+  val NOT_FOUND_JOB_UUID: UUID     = UUID.fromString("6ea79557-3112-4c84-a8f5-1d1e2c300948")
+  val SCALA_JOB_UUID: UUID         = UUID.fromString("843df718-ec6e-4d49-9289-f799c0f40064")
   val SCALA_JOB: Job = Job(
     SCALA_JOB_UUID,
     1659186086L,
