@@ -5,4 +5,6 @@ case class Pagination(offset: Int, limit: Int)
 object Pagination {
   def apply(maybeOffset: Option[Int], maybeLimit: Option[Int]): Pagination =
     new Pagination(maybeOffset.getOrElse(0), maybeLimit.getOrElse(20))
+
+  val default = new Pagination(0, 20)
 }

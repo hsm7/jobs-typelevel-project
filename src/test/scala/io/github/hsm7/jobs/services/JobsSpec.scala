@@ -3,7 +3,8 @@ package io.github.hsm7.jobs.services
 import cats.effect.IO
 import cats.effect.kernel.Resource
 import cats.effect.testing.scalatest.AsyncIOSpec
-import io.github.hsm7.jobs.domain.ResourceNotFound
+import io.github.hsm7.jobs.domain.job.JobFilters
+import io.github.hsm7.jobs.domain.{Pagination, ResourceNotFound}
 import io.github.hsm7.jobs.fixtures.JobFixture
 import io.github.hsm7.jobs.services.utils.Database
 import org.scalatest.freespec.AsyncFreeSpec
@@ -34,6 +35,15 @@ class JobsSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with JobFixt
     "Should retrieve all jobs" in {
       jobsResource.use { jobs =>
         jobs.getAll.map(_ shouldBe List(SCALA_JOB))
+      }
+    }
+
+    "Should filter jobs with remote flag" in {
+      jobsResource.use { jobs =>
+        for {
+          remoteJobs <- jobs.getAll(Pagination.default, JobFilters(remote = Some(true)))
+          nonRemoteJobs <- jobs.getAll(Pagination.default, JobFilters(remote = Some(false)))
+        } yield (remoteJobs, nonRemoteJobs) shouldBe (List.empty, List(SCALA_JOB))
       }
     }
 
