@@ -38,12 +38,21 @@ class JobsSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with JobFixt
       }
     }
 
-    "Should filter jobs with remote flag" in {
+    "Should filter jobs by remote flag" in {
       jobsResource.use { jobs =>
         for {
-          remoteJobs <- jobs.getAll(Pagination.default, JobFilters(remote = Some(true)))
+          remoteJobs    <- jobs.getAll(Pagination.default, JobFilters(remote = Some(true)))
           nonRemoteJobs <- jobs.getAll(Pagination.default, JobFilters(remote = Some(false)))
         } yield (remoteJobs, nonRemoteJobs) shouldBe (List.empty, List(SCALA_JOB))
+      }
+    }
+
+    "Should filter jobs by tags" in {
+      jobsResource.use { jobs =>
+        for {
+          typelevelJobs <- jobs.getAll(Pagination.default, JobFilters(tags = List("scala", "cats", "typelevel")))
+          zioJobs       <- jobs.getAll(Pagination.default, JobFilters(tags = List("zio")))
+        } yield (zioJobs, typelevelJobs) shouldBe (List.empty, List(SCALA_JOB))
       }
     }
 
